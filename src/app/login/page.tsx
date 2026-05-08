@@ -1,20 +1,45 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
+import axios from "axios";
 
 export default function LoginPage() {
+    const router = useRouter();
 
     const [user, setUser] = useState({
         email: "",
         password: ""
     });
+    const [loading, setLoading] = useState(false);
 
-    const onLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+    const [buttonDisabled, setButtonDisabled] = useState(true);
+
+    const onLogin = async (e: React.MouseEvent<HTMLButtonElement>) => {
+        try{
+            setLoading(true);
+            const responce = await axios.post('/api/users/login', user);
+            toast.success("Login successful!");
+            console.log(responce.data);
+            router.push("/profile");
+        }catch(error:any) {
+            toast.error("Error occurred while logging in:", error);
+        }finally{
+            setLoading(false);
+        }
         e.preventDefault();
 
         console.log(user);
     };
+    useEffect(()=>{
+            if(user.email && user.password){
+                setButtonDisabled(false);
+            }else{
+                setButtonDisabled(true);
+            }
+    },[user])
 
     return (
 <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
@@ -22,13 +47,9 @@ export default function LoginPage() {
     <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-md">
 
         <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">
-            Login
+            {loading ? "Processing":"Login"}
         </h1>
 
-        <form
-            onSubmit={onLogin}
-            className="space-y-4"
-        >
 
            
             <input
@@ -52,13 +73,21 @@ export default function LoginPage() {
             />
 
             <button
-                type="submit"
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-medium transition"
-            >
-                Login
-            </button>
+                        onClick={onLogin}
+                        disabled={buttonDisabled}
+                        type="button"
+                        className={`w-full py-3 rounded-lg font-medium text-white transition ${
+                            buttonDisabled
+                                ? "bg-gray-400 cursor-not-allowed"
+                                : "bg-blue-600 hover:bg-blue-700"
+                        }`}
+                    >
+                        {buttonDisabled
+                            ? "Please fill all fields"
+                            : "Login"}
+                    </button>
 
-        </form>
+       
 
         <p className="text-center text-gray-600 mt-5">
             Don't have an account?{" "}
