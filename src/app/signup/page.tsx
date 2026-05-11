@@ -33,6 +33,7 @@ export default function SignupPage() {
     const onSignup = async (
         e: MouseEvent<HTMLButtonElement>
     ) => {
+        e.preventDefault();
         try{
             setLoading(true);
             const responce = await axios.post('/api/users/signup', user);
@@ -40,14 +41,10 @@ export default function SignupPage() {
             console.log(responce.data);
             router.push('/login');
         }catch(error:any) {
-            toast.error("Error occurred while signing up:", error);
+            toast.error(error?.response?.data?.error || "Error occurred while signing up");
         }finally{
             setLoading(false);
         }
-        e.preventDefault();
-
-        console.log(user);
-
     };
 
     return (

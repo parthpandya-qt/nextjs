@@ -18,20 +18,18 @@ export default function LoginPage() {
     const [buttonDisabled, setButtonDisabled] = useState(true);
 
     const onLogin = async (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
         try{
             setLoading(true);
             const responce = await axios.post('/api/users/login', user);
             toast.success("Login successful!");
             console.log(responce.data);
-            router.push("/profile");
+            router.push('/profile');
         }catch(error:any) {
-            toast.error("Error occurred while logging in:", error);
+            toast.error(error?.response?.data?.error || "Error occurred while logging in");
         }finally{
             setLoading(false);
         }
-        e.preventDefault();
-
-        console.log(user);
     };
     useEffect(()=>{
             if(user.email && user.password){
@@ -51,7 +49,8 @@ export default function LoginPage() {
         </h1>
 
 
-           
+           <div className="flex flex-col gap-4">
+            
             <input
                 type="email"
                 placeholder="Email"
@@ -86,8 +85,7 @@ export default function LoginPage() {
                             ? "Please fill all fields"
                             : "Login"}
                     </button>
-
-       
+            </div>
 
         <p className="text-center text-gray-600 mt-5">
             Don't have an account?{" "}

@@ -3,8 +3,6 @@ import bcryptjs from "bcryptjs";
 import User from "@/models/user.model";
 import { NextResponse,NextRequest } from "next/server";
 import jwt from 'jsonwebtoken';
-import dotenv from 'dotenv';
-dotenv.config();
 
 connect();
 
@@ -21,7 +19,7 @@ export async function POST(request:NextRequest) {
         if(!savedUser){
             return NextResponse.json({error:"User not found"},{status:400})
         }
-        const result = await bcryptjs.compare(savedUser.password,password)
+        const result = await bcryptjs.compare(password, savedUser.password)
         if(!result){
             return NextResponse.json({error:"Password is incorrect"},{status:400})
         }
@@ -46,7 +44,8 @@ export async function POST(request:NextRequest) {
         })
         return response;
 
-    }catch (error) {
-        return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+    }catch (error: any) {
+        console.error("Login error:", error.message);
+        return NextResponse.json({ error: error.message || "Internal server error" }, { status: 500 });
     }
 }

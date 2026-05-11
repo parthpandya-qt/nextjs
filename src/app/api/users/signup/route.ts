@@ -30,7 +30,8 @@ export async function POST(request:NextRequest) {
         }
         console.log("User created successfully:", savedUser);
         return NextResponse.json({ message: "User created successfully" }, { status: 201 });
-    } catch (error) {
-        return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+    } catch (error: any) {
+        console.error("Signup error:", error.message);
+        return NextResponse.json({ error: error.message || "Internal server error" }, { status: 500 });
     }
 }
